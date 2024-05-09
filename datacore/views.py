@@ -3,6 +3,12 @@ from rest_framework.response import Response
 from .models import Facultad , Especialidad , EstadoPersona
 from .serializer import FacultadSerializer , EspecialidadSerializer , EstadoPersonaSerializer
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework_simplejwt.tokens import UntypedToken
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+
 # Create your views here.
 
 class FacultadViewSet(viewsets.ModelViewSet):
@@ -25,6 +31,13 @@ class EspecialidadViewSet(viewsets.ModelViewSet) :
         serializer = self.get_serializer(especialidades, many=True)
         return Response(serializer.data)
     
-
+class VerifyTokenView(APIView):
+    def post(self, request, *args, **kwargs):
+        token = request.data.get('token')
+        try:
+            UntypedToken(token)
+            return Response(status=status.HTTP_200_OK)
+        except (InvalidToken, TokenError) as e:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
