@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
-    'datacore'
+    'rest_framework.authtoken',
+    'datacore',
     'django.contrib.sites',
     'allauth',
     'allauth.account',
@@ -55,6 +56,7 @@ INSTALLED_APPS = [
 ]
 SITE_ID = 1
 AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
@@ -65,6 +67,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',  
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -82,6 +85,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                 'allauth.account.context_processors.account',  # Añadir el context processor de allauth
+                'allauth.socialaccount.context_processors.socialaccount',  # Añadir el context processor de socialaccount
+                
             ],
         },
     },
