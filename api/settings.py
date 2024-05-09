@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'dj_rest_auth',
     'dj_rest_auth.registration',
 ]
+
 SITE_ID = 1
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
@@ -68,7 +69,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'allauth.account.middleware.AccountMiddleware',  
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -86,13 +86,13 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                 'allauth.account.context_processors.account',  # Añadir el context processor de allauth
-                'allauth.socialaccount.context_processors.socialaccount',  # Añadir el context processor de socialaccount
-                
+                'allauth.account.context_processors.account',  # Asegúrate de que esta línea esté presente
+                'allauth.socialaccount.context_processors.socialaccount',  # Asegúrate de que esta línea esté presente
             ],
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'api.wsgi.application'
 
