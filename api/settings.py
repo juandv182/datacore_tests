@@ -160,6 +160,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Cors authorization
 CORS_ALLOW_ALL_ORIGINS = True
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
+
 # settings.py
 AUTH_USER_MODEL = 'datacore.User'
 
@@ -172,7 +176,8 @@ SOCIALACCOUNT_PROVIDERS = {
         ],
         'AUTH_PARAMS': {
             'access_type': 'online',
-        }
+        },
+        'REDIRECT_URI': 'http://localhost:5173/',
     }
 }
 
@@ -186,3 +191,24 @@ REST_FRAMEWORK = {
     ),
 }
 
+# api/settings.py
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
