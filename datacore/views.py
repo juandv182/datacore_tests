@@ -54,12 +54,12 @@ def generate_tokens_for_user(user):
     refresh_token = token_data
     return access_token, refresh_token
 
-def authenticate_or_create_user(email):
+def authenticate_or_create_user(email,fname,lname):
     try:
         user = User.objects.get(email=email)
     except User.DoesNotExist:
         # Obtener valores predeterminados específicos por sus IDs
-        default_estado_persona = EstadoPersona.objects.get(id_estado_persona=1)
+        default_estado_persona = EstadoPersona.objects.get(id_estado_persona=3)
         default_especialidad = Especialidad.objects.get(id_especialidad=1)
         default_facultad = Facultad.objects.get(id_facultad=1)
         user = User.objects.create_user(
@@ -67,7 +67,9 @@ def authenticate_or_create_user(email):
             email=email,
             id_estado_persona=default_estado_persona,
             id_especialidad=default_especialidad,
-            id_facultad=default_facultad
+            id_facultad=default_facultad,
+            first_name=fname,
+            last_name=lname
         )
     return user
 
@@ -84,7 +86,7 @@ class LoginWithGoogle(APIView):
                 first_name = id_token.get('given_name', '')
                 last_name = id_token.get('family_name', '')
 
-                user = authenticate_or_create_user(user_email)
+                user = authenticate_or_create_user(user_email,first_name,last_name)
                 token = AccessToken.for_user(user)
                 refresh = RefreshToken.for_user(user)
                 
