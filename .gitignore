@@ -1,5 +1,3 @@
-README.md
-
 # Compiled class file
 *.class
 
@@ -11,6 +9,7 @@ README.md
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
+
 
 # Package Files #
 *.jar

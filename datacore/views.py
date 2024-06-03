@@ -10,6 +10,9 @@ from dj_rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
+from rest_framework.permissions import IsAuthenticated
+from datacore.permissions import IsAdmin, IsUser
+from django.contrib.auth.models import Group
 import logging
 # Create your views here.
 from rest_framework.decorators import action
@@ -71,6 +74,8 @@ def authenticate_or_create_user(email,fname,lname):
             first_name=fname,
             last_name=lname
         )
+        default_group = Group.objects.get(name='USER')
+        user.groups.add(default_group)
     return user
 
 class LoginWithGoogle(APIView):
@@ -95,21 +100,33 @@ class LoginWithGoogle(APIView):
                     'username': user_email, 
                     'refresh_token': str(refresh), 
                     'first_name': first_name, 
-                    'last_name': last_name
+                    'last_name': last_name,
+                    'is_admin': user.groups.filter(name='ADMIN').exists()
                 })
             return Response({'error': 'No code provided'}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class AdminOnlyView(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        return Response({"message": "Hello, admin!"})
+
+class UserOnlyView(APIView):
+    permission_classes = [IsAuthenticated, IsUser]
+
+    def get(self, request):
+        return Response({"message": "Hello, user!"})
         
 class CPUViewSet(viewsets.ModelViewSet):
     queryset = CPU.objects.all()
     serializer_class = CPUSerializer
 
-
 class GPUViewSet(viewsets.ModelViewSet):
     queryset = GPU.objects.all()
     serializer_class = GPUSerializer
-
 
 class UsersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
