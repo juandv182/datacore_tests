@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import date
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.hashers import make_password, check_password
 
 
 class Facultad(models.Model):
@@ -22,6 +23,7 @@ class EstadoPersona(models.Model):
 class User(AbstractUser):
     motivo_desautorizado = models.TextField(blank=True)
     recursos_max = models.PositiveIntegerField(default=1)
+    horas_max = models.PositiveIntegerField(default=1)
     id_estado_persona = models.ForeignKey(
         EstadoPersona, on_delete=models.CASCADE, null=False
     )
@@ -29,8 +31,22 @@ class User(AbstractUser):
         Especialidad, on_delete=models.CASCADE, null=False
     )
     id_facultad = models.ForeignKey(Facultad, on_delete=models.CASCADE, null=False)
+
     def __str__(self):
-       return self.username
+        return self.username
+
+
+class Herramienta(models.Model):
+    id_herramienta = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=200)
+
+
+class Libreria(models.Model):
+    id_libreria = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=200)
+    version = models.CharField(max_length=50)
+    herramienta = models.ForeignKey(Herramienta, on_delete=models.CASCADE, null=False)
+
 
 class Recurso(models.Model):
     id_recurso = models.AutoField(primary_key=True)
@@ -38,6 +54,16 @@ class Recurso(models.Model):
     tamano_ram = models.IntegerField()
     estado = models.BooleanField()
     ubicacion = models.TextField(blank=True)
+    herramientas = models.ManyToManyField(Herramienta, blank=True)
+    direccion_ip = models.CharField(max_length=255, blank=True)
+    user = models.CharField(max_length=150, blank=True)
+    password = models.CharField(max_length=128, blank=True)
+
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)
+
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.password)
 
 
 class CPU(models.Model):
@@ -70,3 +96,18 @@ class Solicitud(models.Model):
     fecha_procesamiento = models.DateTimeField()
     id_recurso = models.ForeignKey(Recurso, on_delete=models.CASCADE, null=False)
     id_user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+
+
+class Archivo(models.Model):
+    id_solicitud = models.AutoField(primary_key=True)
+    ruta = models.CharField(max_length=200)
+    id_solicitud = models.ForeignKey(Solicitud, on_delete=models.CASCADE, null=False)
+
+
+class Ajustes(models.Model):
+    id = models.AutoField(primary_key=True)
+    codigo = models.CharField(max_length=50, unique=True, null=False, blank=False)
+    nombre = models.CharField(max_length=100, null=False, blank=False)
+    descripcion = models.CharField(max_length=200, null=False, blank=False)
+    valor = models.CharField(max_length=200, null=False, blank=False)
+    tipo = models.CharField(max_length=50, null=False, blank=False)
